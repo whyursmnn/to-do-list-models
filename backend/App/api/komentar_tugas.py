@@ -7,7 +7,7 @@ from app.core.database import get_db
 from app.schemas.komentar_tugas import KomentarTugasCreate, KomentarTugasResponse
 from app.crud import komentar_tugas as crud_komentar
 from app.crud import tugas as crud_tugas # Untuk validasi tugas_id
-from app.core.dependencies import get_current_user
+from app.core.dependencies import get_current_user, get_current_admin_user # <--- ADD THIS
 from app.models.user import User
 
 router = APIRouter()

@@ -1,6 +1,8 @@
 # backend/app/crud/tugas.py
 from sqlalchemy.orm import Session, joinedload
-from app.models.tugas import Tugas, PenugasanTugas, RiwayatStatusTugas
+from app.models.tugas import Tugas  # Hapus 'RiwayatStatusTugas' dari sini
+from app.models.penugasan_tugas import PenugasanTugas # Import PenugasanTugas dari file yang benar
+from app.models.riwayat_status_tugas import RiwayatStatusTugas # Import RiwayatStatusTugas dari file yang benar
 from app.schemas.tugas import TugasCreate, TugasUpdate, StatusEnum
 from typing import List, Optional
 

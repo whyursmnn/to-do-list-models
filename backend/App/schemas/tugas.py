@@ -2,6 +2,7 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, date
+from enum import Enum
 
 # Import skema respons untuk nested data
 from app.schemas.user import UserResponse
