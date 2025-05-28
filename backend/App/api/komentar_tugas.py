@@ -17,6 +17,7 @@ async def read_comments_for_task(
     tugas_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    """Mendapatkan semua komentar untuk tugas tertentu."""
     # Otorisasi: Pastikan user memiliki akses ke tugas ini (admin atau ditugaskan)
     tugas = crud_tugas.get_tugas(db, tugas_id)
     if not tugas:
@@ -34,6 +35,7 @@ async def create_comment_endpoint(
     komentar: KomentarTugasCreate, db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    """Membuat komentar baru untuk tugas."""
     # Otorisasi: Pastikan user memiliki akses ke tugas ini (admin atau ditugaskan)
     tugas = crud_tugas.get_tugas(db, komentar.tugas_id)
     if not tugas:
@@ -50,6 +52,7 @@ async def delete_comment_endpoint(
     komentar_id: int, db: Session = Depends(get_db),
     current_user: User = Depends(get_current_admin_user) # Hanya admin yang bisa menghapus komentar
 ):
+    """Menghapus komentar tugas (hanya untuk Admin)."""
     if not crud_komentar.delete_komentar_tugas(db, komentar_id):
         raise HTTPException(status_code=404, detail="Comment not found")
     return

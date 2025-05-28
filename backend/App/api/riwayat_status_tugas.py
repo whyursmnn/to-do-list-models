@@ -17,6 +17,7 @@ async def read_status_history_for_task(
     tugas_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    """Mendapatkan riwayat status tugas untuk tugas tertentu."""
     # Otorisasi: Pastikan user memiliki akses ke tugas ini (admin atau ditugaskan)
     tugas = crud_tugas.get_tugas(db, tugas_id)
     if not tugas:

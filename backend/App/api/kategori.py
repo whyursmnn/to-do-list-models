@@ -16,6 +16,7 @@ async def read_kategoris(
     skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user) # Semua role bisa melihat kategori
 ):
+    """Mendapatkan daftar semua kategori."""
     kategoris = crud_kategori.get_kategoris(db, skip=skip, limit=limit)
     return kategoris
 
@@ -24,6 +25,7 @@ async def create_kategori_endpoint(
     kategori: KategoriCreate, db: Session = Depends(get_db),
     current_user: User = Depends(get_current_admin_user) # Hanya admin yang bisa membuat kategori
 ):
+    """Membuat kategori baru (hanya untuk Admin)."""
     db_kategori = crud_kategori.get_kategori_by_nama(db, nama=kategori.nama)
     if db_kategori:
         raise HTTPException(status_code=400, detail="Category name already exists")
@@ -34,6 +36,7 @@ async def update_kategori_endpoint(
     kategori_id: int, kategori_update: KategoriUpdate, db: Session = Depends(get_db),
     current_user: User = Depends(get_current_admin_user) # Hanya admin yang bisa update
 ):
+    """Memperbarui informasi kategori (hanya untuk Admin)."""
     updated_kategori = crud_kategori.update_kategori(db, kategori_id, kategori_update, updated_by_user_id=current_user.id)
     if not updated_kategori:
         raise HTTPException(status_code=404, detail="Category not found")
@@ -44,6 +47,7 @@ async def delete_kategori_endpoint(
     kategori_id: int, db: Session = Depends(get_db),
     current_user: User = Depends(get_current_admin_user) # Hanya admin yang bisa menghapus
 ):
+    """Melakukan soft delete pada kategori (hanya untuk Admin)."""
     if not crud_kategori.soft_delete_kategori(db, kategori_id):
         raise HTTPException(status_code=404, detail="Category not found")
     return

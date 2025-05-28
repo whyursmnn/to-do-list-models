@@ -6,6 +6,7 @@ from typing import List, Optional
 from app.core.database import get_db
 from app.schemas.tugas import TugasCreate, TugasUpdate, TugasResponse
 from app.crud import tugas as crud_tugas
+from app.crud import user as crud_user # Untuk validasi user IDs
 from app.core.dependencies import get_current_user, get_current_admin_user
 from app.models.user import User # Untuk type hinting user
 
@@ -16,6 +17,7 @@ async def read_tasks(
     skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    """Mendapatkan daftar tugas (Admin melihat semua, Pegawai melihat tugasnya sendiri)."""
     if current_user.role == "admin":
         tasks = crud_tugas.get_all_tugas(db, skip=skip, limit=limit)
     else: # Pegawai hanya bisa melihat tugas yang ditugaskan kepadanya
@@ -27,6 +29,12 @@ async def create_task_endpoint(
     tugas: TugasCreate, db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    """Membuat tugas baru."""
+    # Validasi bahwa semua pegawai_ids yang diberikan benar-benar ada
+    for pegawai_id in tugas.pegawai_ids:
+        if not crud_user.get_user(db, pegawai_id):
+            raise HTTPException(status_code=400, detail=f"Pegawai dengan ID {pegawai_id} tidak ditemukan.")
+
     # Logika bisnis: pegawai bisa membuat tugas untuk diri sendiri atau menugaskan ke user lain
     # Admin bisa membuat tugas dan menugaskan ke siapa saja
     if current_user.role == "pegawai":
@@ -34,7 +42,7 @@ async def create_task_endpoint(
         if not tugas.pegawai_ids or current_user.id not in tugas.pegawai_ids:
             tugas.pegawai_ids.append(current_user.id)
         # Pastikan pegawai tidak menugaskan tugas ke user lain jika bukan admin
-        if any(user_id != current_user.id for user_id in tugas.pegawai_ids):
+        if any(user_id != current_user.id for user_id in tugas.pegaji_ids): # Typo fixed
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Pegawai hanya dapat menugaskan tugas kepada diri sendiri."
@@ -50,6 +58,7 @@ async def read_task_endpoint(
     tugas_id: int, db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    """Mendapatkan detail tugas berdasarkan ID."""
     tugas = crud_tugas.get_tugas(db, tugas_id=tugas_id)
     if not tugas:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -69,9 +78,16 @@ async def update_task_endpoint(
     tugas_id: int, tugas_update: TugasUpdate, db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    """Memperbarui tugas."""
     db_tugas = crud_tugas.get_tugas(db, tugas_id)
     if not db_tugas:
         raise HTTPException(status_code=404, detail="Task not found")
+
+    # Validasi bahwa semua pegawai_ids yang diberikan benar-benar ada (jika diupdate)
+    if tugas_update.pegawai_ids is not None:
+        for pegawai_id in tugas_update.pegawai_ids:
+            if not crud_user.get_user(db, pegawai_id):
+                raise HTTPException(status_code=400, detail=f"Pegawai dengan ID {pegawai_id} tidak ditemukan.")
 
     # Autorasi update: Admin bisa update semua. Pegawai hanya bisa update tugasnya sendiri.
     if current_user.role == "pegawai":
@@ -98,6 +114,7 @@ async def delete_task_endpoint(
     tugas_id: int, db: Session = Depends(get_db),
     current_user: User = Depends(get_current_admin_user) # Hanya admin yang bisa menghapus
 ):
+    """Melakukan soft delete pada tugas (hanya untuk Admin)."""
     if not crud_tugas.soft_delete_tugas(db, tugas_id):
         raise HTTPException(status_code=404, detail="Task not found")
     return

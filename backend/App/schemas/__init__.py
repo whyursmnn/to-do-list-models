@@ -1,4 +1,5 @@
 # backend/app/schemas/__init__.py
+# Import semua skema agar terdaftar dan bisa diakses dari app.schemas.*
 from .user import UserBase, UserCreate, UserUpdate, UserResponse
 from .kategori import KategoriBase, KategoriCreate, KategoriUpdate, KategoriResponse
 from .tugas import TugasBase, TugasCreate, TugasUpdate, TugasResponse, PrioritasEnum, StatusEnum, PenugasanTugasBase, PenugasanTugasResponse

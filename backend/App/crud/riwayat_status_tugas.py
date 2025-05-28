@@ -2,19 +2,22 @@
 from sqlalchemy.orm import Session, joinedload
 from app.models.riwayat_status_tugas import RiwayatStatusTugas
 from app.schemas.riwayat_status_tugas import RiwayatStatusTugasCreate
-from typing import List
+from typing import List, Optional
 
-def get_riwayat_status_tugas(db: Session, riwayat_id: int):
+def get_riwayat_status_tugas(db: Session, riwayat_id: int) -> Optional[RiwayatStatusTugas]:
+    """Mendapatkan riwayat status tugas berdasarkan ID."""
     return db.query(RiwayatStatusTugas).filter(RiwayatStatusTugas.id == riwayat_id).first()
 
-def get_riwayat_by_tugas_id(db: Session, tugas_id: int, skip: int = 0, limit: int = 100):
+def get_riwayat_by_tugas_id(db: Session, tugas_id: int, skip: int = 0, limit: int = 100) -> List[RiwayatStatusTugas]:
+    """Mendapatkan semua riwayat status untuk tugas tertentu."""
     return db.query(RiwayatStatusTugas)\
              .options(joinedload(RiwayatStatusTugas.diubah_oleh_user))\
              .filter(RiwayatStatusTugas.tugas_id == tugas_id)\
              .order_by(RiwayatStatusTugas.waktu_ubah.desc())\
              .offset(skip).limit(limit).all()
 
-def create_riwayat_status_tugas(db: Session, riwayat: RiwayatStatusTugasCreate, diubah_oleh_user_id: int):
+def create_riwayat_status_tugas(db: Session, riwayat: RiwayatStatusTugasCreate, diubah_oleh_user_id: int) -> RiwayatStatusTugas:
+    """Membuat entri riwayat status baru."""
     db_riwayat = RiwayatStatusTugas(
         tugas_id=riwayat.tugas_id,
         status_lama=riwayat.status_lama,
