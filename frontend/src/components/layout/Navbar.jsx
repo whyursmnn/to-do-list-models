@@ -7,20 +7,22 @@ const Navbar = () => {
   const { user, logout } = useAuth();
 
   return (
-    <div className="navbar bg-base-100 shadow-md">
+    <div className="navbar bg-base-100 shadow-md p-4">
       <div className="flex-1">
         <Link to="/" className="btn btn-ghost text-xl normal-case">To-Do Perusahaan</Link>
       </div>
       <div className="flex-none gap-2">
         <div className="dropdown dropdown-end">
           <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-            <div className="w-10 rounded-full">
-              {/* Anda bisa menampilkan avatar atau inisial user di sini */}
-              <img alt="User Avatar" src="https://daisyui.com/images/stock/photo-1534528736684-ce498b5da6ad.jpg" />
+            <div className="w-10 rounded-full bg-primary flex items-center justify-center text-primary-content text-lg font-bold">
+              {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
             </div>
           </div>
           <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
-            <li><Link to="/profile">Profil</Link></li> {/* Buat halaman ini nanti */}
+            <li className="menu-title">
+              <span>{user?.name || user?.username} ({user?.role})</span>
+            </li>
+            <li><Link to="/profile">Profil</Link></li>
             {user?.role === 'admin' && <li><Link to="/users">Manajemen User</Link></li>}
             <li><button onClick={logout}>Logout</button></li>
           </ul>
