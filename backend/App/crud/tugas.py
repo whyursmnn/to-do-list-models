@@ -1,9 +1,9 @@
 # backend/app/crud/tugas.py
 from sqlalchemy.orm import Session, joinedload
-from app.models.tugas import Tugas  # Hapus 'RiwayatStatusTugas' dari sini
-from app.models.penugasan_tugas import PenugasanTugas # Import PenugasanTugas dari file yang benar
-from app.models.riwayat_status_tugas import RiwayatStatusTugas # Import RiwayatStatusTugas dari file yang benar
-from app.schemas.tugas import TugasCreate, TugasUpdate, StatusEnum
+from app.models.tugas import Tugas  
+from app.models.penugasan_tugas import PenugasanTugas 
+from app.models.riwayat_status_tugas import RiwayatStatusTugas 
+from app.schemas.tugas import TugasCreate, TugasUpdate
 from typing import List, Optional
 
 def get_tugas(db: Session, tugas_id: int):
@@ -44,7 +44,7 @@ def create_tugas(db: Session, tugas: TugasCreate, dibuat_oleh_user_id: int):
         dibuat_oleh=dibuat_oleh_user_id
     )
     db.add(db_tugas)
-    db.flush() # Mendapatkan ID tugas sebelum commit untuk penugasan
+    db.flush() 
 
     if tugas.pegawai_ids:
         for pegawai_id in set(tugas.pegawai_ids): # Pastikan ID unik
@@ -60,7 +60,7 @@ def update_tugas(db: Session, tugas_id: int, tugas_update: TugasUpdate, updated_
     if not db_tugas:
         return None
 
-    # Catat riwayat status jika status berubah
+    
     old_status = db_tugas.status
     
     update_data = tugas_update.dict(exclude_unset=True, exclude={"pegawai_ids"})
@@ -69,11 +69,11 @@ def update_tugas(db: Session, tugas_id: int, tugas_update: TugasUpdate, updated_
     
     db_tugas.updated_by = updated_by_user_id
 
-    # Update penugasan pegawai
+    
     if tugas_update.pegawai_ids is not None:
-        # Hapus penugasan lama
+        
         db.query(PenugasanTugas).filter(PenugasanTugas.tugas_id == tugas_id).delete()
-        # Tambah penugasan baru
+        
         for pegawai_id in set(tugas_update.pegawai_ids):
             db_penugasan = PenugasanTugas(tugas_id=db_tugas.id, pegawai_id=pegawai_id)
             db.add(db_penugasan)
@@ -81,7 +81,7 @@ def update_tugas(db: Session, tugas_id: int, tugas_update: TugasUpdate, updated_
     db.commit()
     db.refresh(db_tugas)
 
-    # Catat riwayat status setelah commit tugas utama
+  
     if old_status != db_tugas.status:
         db_riwayat = RiwayatStatusTugas(
             tugas_id=db_tugas.id,
@@ -90,7 +90,7 @@ def update_tugas(db: Session, tugas_id: int, tugas_update: TugasUpdate, updated_
             diubah_oleh=updated_by_user_id
         )
         db.add(db_riwayat)
-        db.commit() # Commit riwayat status secara terpisah
+        db.commit() 
         db.refresh(db_riwayat)
 
     return db_tugas

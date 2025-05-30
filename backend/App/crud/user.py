@@ -13,10 +13,6 @@ def get_user_by_username(db: Session, username: str) -> Optional[User]:
     """Mendapatkan pengguna berdasarkan username."""
     return db.query(User).filter(User.username == username, User.is_deleted == False).first()
 
-def get_user_by_email(db: Session, email: str) -> Optional[User]:
-    """Mendapatkan pengguna berdasarkan email."""
-    return db.query(User).filter(User.email == email, User.is_deleted == False).first()
-
 def get_users(db: Session, skip: int = 0, limit: int = 100) -> List[User]:
     """Mendapatkan daftar semua pengguna yang tidak dihapus."""
     return db.query(User).filter(User.is_deleted == False).offset(skip).limit(limit).all()
@@ -26,7 +22,6 @@ def create_user(db: Session, user: UserCreate) -> User:
     hashed_password = get_password_hash(user.password)
     db_user = User(
         username=user.username,
-        email=user.email,
         hashed_password=hashed_password,
         name=user.name,
         role=user.role

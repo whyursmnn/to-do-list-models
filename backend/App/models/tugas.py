@@ -5,17 +5,17 @@ from app.core.database import Base
 from datetime import datetime, date
 
 class Tugas(Base):
-    __tablename__ = "tugas" # Table name 'Tugas'
+    __tablename__ = "tugas" 
 
     id = Column(Integer, primary_key=True, index=True)
-    judul = Column(String(255), nullable=False) # Field name 'judul'
+    judul = Column(String(255), nullable=False) 
     deskripsi = Column(Text, nullable=True)
-    prioritas = Column(Enum('low', 'medium', 'high'), default='medium', nullable=False) # Enum type
-    status = Column(Enum('to_do', 'in_progress', 'done', 'archived'), default='to_do', nullable=False) # Enum type
-    tanggal_mulai = Column(Date, nullable=True) # Date type
-    tanggal_selesai = Column(Date, nullable=True) # Date type
+    prioritas = Column(Enum('low', 'medium', 'high'), default='medium', nullable=False)
+    status = Column(Enum('to_do', 'in_progress', 'done', 'archived'), default='to_do', nullable=False) 
+    tanggal_mulai = Column(Date, nullable=True) 
+    tanggal_selesai = Column(Date, nullable=True) 
     kategori_id = Column(Integer, ForeignKey("kategori.id"), nullable=True)
-    dibuat_oleh = Column(Integer, ForeignKey("users.id"), nullable=False) # Field name 'dibuat_oleh'
+    dibuat_oleh = Column(Integer, ForeignKey("users.id"), nullable=False) 
     updated_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

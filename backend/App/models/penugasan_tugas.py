@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from app.core.database import Base
 
 class PenugasanTugas(Base):
-    __tablename__ = "penugasan_tugas" # Table name 'PenugasanTugas'
+    __tablename__ = "penugasan_tugas" 
 
     id = Column(Integer, primary_key=True, index=True)
     tugas_id = Column(Integer, ForeignKey("tugas.id"), nullable=False)

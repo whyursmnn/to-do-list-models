@@ -7,23 +7,19 @@ from datetime import datetime
 from app.core.database import get_db
 from app.schemas.user import UserCreate, UserResponse
 from app.crud import user as crud_user
-from app.crud import log_autentikasi as crud_log # Import crud log autentikasi
+from app.crud import log_autentikasi as crud_log
 from app.core.security import verify_password, create_access_token
 from app.core.dependencies import get_current_admin_user, get_current_user
-from app.models.user import User # Untuk type hinting user
+from app.models.user import User 
 
 router = APIRouter()
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register_user(user: UserCreate, db: Session = Depends(get_db),
-                        current_user: User = Depends(get_current_admin_user)): # Hanya admin yang bisa mendaftar
-    """Mendaftarkan pengguna baru (hanya untuk Admin)."""
+                        current_user: User = Depends(get_current_admin_user)):
     db_user = crud_user.get_user_by_username(db, username=user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
-    db_user = crud_user.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
     return crud_user.create_user(db=db, user=user)
 
 @router.post("/token")
@@ -40,8 +36,17 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     # Catat log login
     crud_log.create_log_autentikasi(db, user_id=user.id)
 
-    access_token = create_access_token(data={"sub": str(user.id), "role": user.role, "email": user.email, "name": user.name})
-    return {"access_token": access_token, "token_type": "bearer", "user_role": user.role, "user_id": user.id, "username": user.username, "user_name": user.name, "user_email": user.email}
+    access_token = create_access_token(data={
+    "sub": str(user.id),
+    "role": user.role,
+    "name": user.name
+})
+    return {"access_token": access_token,
+        "token_type": "bearer",
+        "user_role": user.role,    
+        "user_id": user.id,        
+        "username": user.username, 
+        "user_name": user.name }
 
 @router.get("/me", response_model=UserResponse)
 async def read_users_me(current_user: User = Depends(get_current_user)):

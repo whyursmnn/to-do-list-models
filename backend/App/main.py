@@ -15,8 +15,11 @@ app = FastAPI(
 # Konfigurasi CORS
 origins = [
     "http://localhost",
-    "http://localhost:3000", # Port default untuk aplikasi React
-    # Tambahkan origin frontend Anda di sini saat deployment
+    "http://localhost:3000", 
+   
+    "http://127.0.0.1:8000",
+    "http://127.0.0.1:5173", 
+    "http://localhost:5173", 
 ]
 
 app.add_middleware(
@@ -27,23 +30,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount direktori 'uploads' sebagai direktori statis
+
 UPLOAD_DIRECTORY = "uploads"
-os.makedirs(UPLOAD_DIRECTORY, exist_ok=True) # Pastikan direktori ada
+os.makedirs(UPLOAD_DIRECTORY, exist_ok=True) 
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIRECTORY), name="uploads")
 
 
-# Include API router utama
+
 app.include_router(api_router, prefix="/api")
 
-# Event handler untuk membuat tabel database saat aplikasi dimulai
-@app.on_event("startup")
-def on_startup():
-    print("Creating database tables...")
-    Base.metadata.create_all(bind=engine)
-    print("Database tables created.")
 
-# Route dasar
 @app.get("/")
 async def root():
     return {"message": "Welcome to the To-Do List Company API!"}

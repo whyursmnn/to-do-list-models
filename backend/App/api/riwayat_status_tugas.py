@@ -6,19 +6,18 @@ from typing import List
 from app.core.database import get_db
 from app.schemas.riwayat_status_tugas import RiwayatStatusTugasResponse
 from app.crud import riwayat_status_tugas as crud_riwayat
-from app.crud import tugas as crud_tugas # Untuk validasi tugas_id
+from app.crud import tugas as crud_tugas 
 from app.core.dependencies import get_current_user
 from app.models.user import User
 
 router = APIRouter()
 
-@router.get("/task/{tugas_id}/status-history", response_model=List[RiwayatStatusTugasResponse])
+@router.get("/task/{tugas_id}", response_model=List[RiwayatStatusTugasResponse]) 
 async def read_status_history_for_task(
     tugas_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """Mendapatkan riwayat status tugas untuk tugas tertentu."""
-    # Otorisasi: Pastikan user memiliki akses ke tugas ini (admin atau ditugaskan)
     tugas = crud_tugas.get_tugas(db, tugas_id)
     if not tugas:
         raise HTTPException(status_code=404, detail="Task not found")

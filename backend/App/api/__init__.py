@@ -6,7 +6,7 @@ api_router = APIRouter()
 
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(users.router, prefix="/users", tags=["users"])
-api_router.include_router(kategori.router, prefix="/kategori", tags=["kategori"]) # Perubahan nama endpoint
+api_router.include_router(kategori.router, prefix="/kategori", tags=["kategori"])
 api_router.include_router(tasks.router, prefix="/tasks", tags=["tasks"])
 api_router.include_router(komentar_tugas.router, prefix="/comments", tags=["comments"])
 api_router.include_router(lampiran_tugas.router, prefix="/attachments", tags=["attachments"])

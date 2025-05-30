@@ -2,7 +2,7 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
-from app.schemas.user import UserResponse # Untuk nested user
+from app.schemas.user import UserResponse 
 
 class LogAutentikasiBase(BaseModel):
     user_id: int
@@ -14,7 +14,7 @@ class LogAutentikasiCreate(LogAutentikasiBase):
 
 class LogAutentikasiResponse(LogAutentikasiBase):
     id: int
-    user: Optional[UserResponse] = None # Nested user
+    user: Optional[UserResponse] = None 
 
     class Config:
         orm_mode = True

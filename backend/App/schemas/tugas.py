@@ -2,19 +2,19 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, date
-from enum import Enum
+from enum import Enum as PyEnum 
 
-# Import skema respons untuk nested data
+
 from app.schemas.user import UserResponse
 from app.schemas.kategori import KategoriResponse
 
-# Enum untuk Prioritas dan Status
-class PrioritasEnum(str, Enum):
+
+class PrioritasEnum(str, PyEnum):
     low = "low"
     medium = "medium"
     high = "high"
 
-class StatusEnum(str, Enum):
+class StatusEnum(str, PyEnum):
     to_do = "to_do"
     in_progress = "in_progress"
     done = "done"
@@ -28,14 +28,33 @@ class TugasBase(BaseModel):
     tanggal_mulai: Optional[date] = None
     tanggal_selesai: Optional[date] = None
     kategori_id: Optional[int] = None
-    # Untuk penugasan, kita akan menerima list ID pegawai
+    
     pegawai_ids: Optional[List[int]] = []
 
 class TugasCreate(TugasBase):
     pass
 
-class TugasUpdate(TugasBase):
+class TugasUpdate(BaseModel): 
+    judul: Optional[str] = None
+    deskripsi: Optional[str] = None
+    prioritas: Optional[PrioritasEnum] = None
+    status: Optional[StatusEnum] = None
+    tanggal_mulai: Optional[date] = None
+    tanggal_selesai: Optional[date] = None
+    kategori_id: Optional[int] = None
+    pegawai_ids: Optional[List[int]] = None
     is_deleted: Optional[bool] = None
+
+
+class PenugasanTugasWithUserResponse(BaseModel):
+    id: int
+    tugas_id: int
+    pegawai_id: int
+    pegawai_user: Optional[UserResponse] = None
+
+    class Config:
+        from_attributes = True 
+
 
 class TugasResponse(TugasBase):
     id: int
@@ -44,14 +63,13 @@ class TugasResponse(TugasBase):
     created_at: datetime
     updated_at: datetime
     is_deleted: bool
-    kategori: Optional[KategoriResponse] = None # Nested kategori
-    # Untuk menampilkan pegawai yang ditugaskan
-    penugasan_tugas: List[UserResponse] = [] # Akan diisi dengan UserResponse dari PenugasanTugas
+    kategori: Optional[KategoriResponse] = None 
+    penugasan_tugas: List[PenugasanTugasWithUserResponse] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
-# Skema untuk PenugasanTugas (jika perlu endpoint terpisah)
+
 class PenugasanTugasBase(BaseModel):
     tugas_id: int
     pegawai_id: int
@@ -60,4 +78,4 @@ class PenugasanTugasResponse(PenugasanTugasBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

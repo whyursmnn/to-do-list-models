@@ -5,7 +5,7 @@ from app.core.database import Base
 from datetime import datetime
 
 class LampiranTugas(Base):
-    __tablename__ = "lampiran_tugas" # Table name 'LampiranTugas'
+    __tablename__ = "lampiran_tugas" 
 
     id = Column(Integer, primary_key=True, index=True)
     tugas_id = Column(Integer, ForeignKey("tugas.id"), nullable=False)

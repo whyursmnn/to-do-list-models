@@ -7,7 +7,7 @@ from app.core.database import get_db
 from app.schemas.user import UserResponse, UserCreate, UserUpdate
 from app.crud import user as crud_user
 from app.core.dependencies import get_current_admin_user
-from app.models.user import User # Untuk type hinting user
+from app.models.user import User 
 
 router = APIRouter()
 
@@ -29,9 +29,6 @@ async def create_user_endpoint(
     db_user = crud_user.get_user_by_username(db, username=user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
-    db_user = crud_user.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
     return crud_user.create_user(db=db, user=user)
 
 @router.put("/{user_id}", response_model=UserResponse)

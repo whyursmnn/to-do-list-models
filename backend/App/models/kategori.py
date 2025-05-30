@@ -8,7 +8,7 @@ class Kategori(Base):
     __tablename__ = "kategori" # Table name 'Kategori'
 
     id = Column(Integer, primary_key=True, index=True)
-    nama = Column(String(100), nullable=False) # Field name 'nama'
+    nama = Column(String(100), nullable=False) 
     deskripsi = Column(Text, nullable=True)
     created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)

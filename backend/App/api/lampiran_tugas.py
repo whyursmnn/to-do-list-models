@@ -1,5 +1,5 @@
 # backend/app/api/lampiran_tugas.py
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -8,26 +8,25 @@ import os # Untuk menyimpan file
 from app.core.database import get_db
 from app.schemas.lampiran_tugas import LampiranTugasCreate, LampiranTugasResponse
 from app.crud import lampiran_tugas as crud_lampiran
-from app.crud import tugas as crud_tugas # Untuk validasi tugas_id
+from app.crud import tugas as crud_tugas 
 from app.core.dependencies import get_current_user, get_current_admin_user
 from app.models.user import User
 
 router = APIRouter()
 
-# Direktori untuk menyimpan file lampiran
+
 UPLOAD_DIRECTORY = "uploads"
-# Pastikan direktori ada di root proyek backend (selevel dengan folder 'app')
-# Jadi, UPLOAD_DIRECTORY akan dibuat di D:\Kuliah\Semester 4\Pemrograman Web\Projek Akhir web\backend\uploads
+
 os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", UPLOAD_DIRECTORY), exist_ok=True)
 ACTUAL_UPLOAD_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", UPLOAD_DIRECTORY)
 
-@router.get("/task/{tugas_id}/attachments", response_model=List[LampiranTugasResponse])
+@router.get("/task/{tugas_id}", response_model=List[LampiranTugasResponse])
 async def read_attachments_for_task(
     tugas_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """Mendapatkan semua lampiran untuk tugas tertentu."""
-    # Otorisasi: Pastikan user memiliki akses ke tugas ini (admin atau ditugaskan)
+    
     tugas = crud_tugas.get_tugas(db, tugas_id)
     if not tugas:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -39,16 +38,16 @@ async def read_attachments_for_task(
     attachments = crud_lampiran.get_lampiran_by_tugas_id(db, tugas_id, skip=skip, limit=limit)
     return attachments
 
-@router.post("/attachments", response_model=LampiranTugasResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=LampiranTugasResponse, status_code=status.HTTP_201_CREATED)
 async def upload_attachment_endpoint(
-    tugas_id: int,
+    tugas_id: int = Form(...),   
     file: UploadFile = File(...),
-    deskripsi: Optional[str] = None,
+    deskripsi: Optional[str] = Form(None), 
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """Mengunggah lampiran baru untuk tugas."""
-    # Otorisasi: Pastikan user memiliki akses ke tugas ini (admin atau ditugaskan)
+    
     tugas = crud_tugas.get_tugas(db, tugas_id)
     if not tugas:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -57,8 +56,7 @@ async def upload_attachment_endpoint(
         if not is_assigned:
             raise HTTPException(status_code=403, detail="Not authorized to upload attachments for this task")
 
-    # Simpan file ke direktori lokal
-    # Pastikan nama file unik untuk menghindari overwrite
+    
     file_extension = os.path.splitext(file.filename)[1]
     unique_filename = f"{os.urandom(16).hex()}{file_extension}"
     file_location = os.path.join(ACTUAL_UPLOAD_PATH, unique_filename)
@@ -69,7 +67,7 @@ async def upload_attachment_endpoint(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to save file: {e}")
 
-    # file_url akan menjadi path yang bisa diakses oleh frontend
+    
     lampiran_create = LampiranTugasCreate(
         tugas_id=tugas_id,
         file_url=f"/uploads/{unique_filename}",
@@ -77,7 +75,7 @@ async def upload_attachment_endpoint(
     )
     return crud_lampiran.create_lampiran_tugas(db=db, lampiran=lampiran_create, uploaded_by_user_id=current_user.id)
 
-@router.get("/attachments/{file_name}")
+@router.put("/{lampiran_id}", response_model=LampiranTugasResponse) 
 async def get_attachment(file_name: str):
     """Mengambil file lampiran berdasarkan nama file."""
     file_path = os.path.join(ACTUAL_UPLOAD_PATH, file_name)
@@ -87,19 +85,19 @@ async def get_attachment(file_name: str):
     return FileResponse(path=file_path, filename=file_name)
 
 
-@router.delete("/attachments/{lampiran_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{lampiran_id}", status_code=status.HTTP_204_NO_CONTENT) 
 async def delete_attachment_endpoint(
     lampiran_id: int, db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user) # Hanya admin yang bisa menghapus lampiran
+    current_user: User = Depends(get_current_admin_user) 
 ):
     """Menghapus lampiran tugas (hanya untuk Admin)."""
     db_lampiran = crud_lampiran.get_lampiran_tugas(db, lampiran_id)
     if not db_lampiran:
         raise HTTPException(status_code=404, detail="Attachment not found")
     
-    # Hapus file fisik juga jika ada
+    
     if db_lampiran.file_url:
-        # Hapus prefix /uploads/
+        
         file_name = db_lampiran.file_url.split('/')[-1]
         file_path_to_delete = os.path.join(ACTUAL_UPLOAD_PATH, file_name)
         if os.path.exists(file_path_to_delete):

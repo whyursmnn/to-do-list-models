@@ -6,9 +6,9 @@ from typing import List, Optional
 from app.core.database import get_db
 from app.schemas.tugas import TugasCreate, TugasUpdate, TugasResponse
 from app.crud import tugas as crud_tugas
-from app.crud import user as crud_user # Untuk validasi user IDs
+from app.crud import user as crud_user 
 from app.core.dependencies import get_current_user, get_current_admin_user
-from app.models.user import User # Untuk type hinting user
+from app.models.user import User 
 
 router = APIRouter()
 
@@ -20,7 +20,7 @@ async def read_tasks(
     """Mendapatkan daftar tugas (Admin melihat semua, Pegawai melihat tugasnya sendiri)."""
     if current_user.role == "admin":
         tasks = crud_tugas.get_all_tugas(db, skip=skip, limit=limit)
-    else: # Pegawai hanya bisa melihat tugas yang ditugaskan kepadanya
+    else: 
         tasks = crud_tugas.get_tugas_by_pegawai_id(db, pegawai_id=current_user.id, skip=skip, limit=limit)
     return tasks
 
@@ -30,19 +30,18 @@ async def create_task_endpoint(
     current_user: User = Depends(get_current_user)
 ):
     """Membuat tugas baru."""
-    # Validasi bahwa semua pegawai_ids yang diberikan benar-benar ada
     for pegawai_id in tugas.pegawai_ids:
         if not crud_user.get_user(db, pegawai_id):
             raise HTTPException(status_code=400, detail=f"Pegawai dengan ID {pegawai_id} tidak ditemukan.")
 
-    # Logika bisnis: pegawai bisa membuat tugas untuk diri sendiri atau menugaskan ke user lain
-    # Admin bisa membuat tugas dan menugaskan ke siapa saja
+    
+    
     if current_user.role == "pegawai":
-        # Jika pegawai membuat tugas tanpa menugaskannya ke diri sendiri, paksa menugaskan ke diri sendiri
+        
         if not tugas.pegawai_ids or current_user.id not in tugas.pegawai_ids:
             tugas.pegawai_ids.append(current_user.id)
         # Pastikan pegawai tidak menugaskan tugas ke user lain jika bukan admin
-        if any(user_id != current_user.id for user_id in tugas.pegaji_ids): # Typo fixed
+        if any(user_id != current_user.id for user_id in tugas.pegawai_ids): # Typo fixed
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Pegawai hanya dapat menugaskan tugas kepada diri sendiri."
@@ -63,7 +62,7 @@ async def read_task_endpoint(
     if not tugas:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    # Autorasi: Admin bisa melihat semua tugas. Pegawai hanya bisa melihat tugasnya sendiri.
+    
     if current_user.role == "pegawai":
         is_assigned_to_user = any(assignment.pegawai_id == current_user.id for assignment in tugas.penugasan_tugas)
         if not is_assigned_to_user:
@@ -83,13 +82,13 @@ async def update_task_endpoint(
     if not db_tugas:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    # Validasi bahwa semua pegawai_ids yang diberikan benar-benar ada (jika diupdate)
+    
     if tugas_update.pegawai_ids is not None:
         for pegawai_id in tugas_update.pegawai_ids:
             if not crud_user.get_user(db, pegawai_id):
                 raise HTTPException(status_code=400, detail=f"Pegawai dengan ID {pegawai_id} tidak ditemukan.")
 
-    # Autorasi update: Admin bisa update semua. Pegawai hanya bisa update tugasnya sendiri.
+    
     if current_user.role == "pegawai":
         is_assigned_to_user = any(assignment.pegawai_id == current_user.id for assignment in db_tugas.penugasan_tugas)
         if not is_assigned_to_user:
@@ -97,7 +96,7 @@ async def update_task_endpoint(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to update this task"
             )
-        # Jika pegawai mengupdate, pastikan tidak mengubah penugasan ke user lain (kecuali admin)
+        
         if tugas_update.pegawai_ids is not None and any(user_id != current_user.id for user_id in tugas_update.pegawai_ids):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -112,7 +111,7 @@ async def update_task_endpoint(
 @router.delete("/{tugas_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_task_endpoint(
     tugas_id: int, db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user) # Hanya admin yang bisa menghapus
+    current_user: User = Depends(get_current_admin_user) 
 ):
     """Melakukan soft delete pada tugas (hanya untuk Admin)."""
     if not crud_tugas.soft_delete_tugas(db, tugas_id):

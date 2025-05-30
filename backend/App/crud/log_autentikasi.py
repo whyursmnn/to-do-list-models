@@ -31,7 +31,7 @@ def create_log_autentikasi(db: Session, user_id: int, login_time: datetime = Non
 
 def update_logout_time(db: Session, user_id: int) -> Optional[LogAutentikasi]:
     """Memperbarui log autentikasi terakhir pengguna dengan waktu logout."""
-    # Temukan log login terakhir yang belum logout
+    
     db_log = db.query(LogAutentikasi)\
                .filter(LogAutentikasi.user_id == user_id, LogAutentikasi.logout_time == None)\
                .order_by(LogAutentikasi.login_time.desc())\

@@ -7,14 +7,14 @@ from app.core.database import get_db
 from app.schemas.kategori import KategoriCreate, KategoriResponse, KategoriUpdate
 from app.crud import kategori as crud_kategori
 from app.core.dependencies import get_current_user, get_current_admin_user
-from app.models.user import User # Untuk type hinting user
+from app.models.user import User 
 
 router = APIRouter()
 
 @router.get("/", response_model=List[KategoriResponse])
 async def read_kategoris(
     skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user) # Semua role bisa melihat kategori
+    current_user: User = Depends(get_current_user) 
 ):
     """Mendapatkan daftar semua kategori."""
     kategoris = crud_kategori.get_kategoris(db, skip=skip, limit=limit)
@@ -23,7 +23,7 @@ async def read_kategoris(
 @router.post("/", response_model=KategoriResponse, status_code=status.HTTP_201_CREATED)
 async def create_kategori_endpoint(
     kategori: KategoriCreate, db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user) # Hanya admin yang bisa membuat kategori
+    current_user: User = Depends(get_current_admin_user) 
 ):
     """Membuat kategori baru (hanya untuk Admin)."""
     db_kategori = crud_kategori.get_kategori_by_nama(db, nama=kategori.nama)
@@ -34,7 +34,7 @@ async def create_kategori_endpoint(
 @router.put("/{kategori_id}", response_model=KategoriResponse)
 async def update_kategori_endpoint(
     kategori_id: int, kategori_update: KategoriUpdate, db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user) # Hanya admin yang bisa update
+    current_user: User = Depends(get_current_admin_user) 
 ):
     """Memperbarui informasi kategori (hanya untuk Admin)."""
     updated_kategori = crud_kategori.update_kategori(db, kategori_id, kategori_update, updated_by_user_id=current_user.id)
@@ -45,7 +45,7 @@ async def update_kategori_endpoint(
 @router.delete("/{kategori_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_kategori_endpoint(
     kategori_id: int, db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user) # Hanya admin yang bisa menghapus
+    current_user: User = Depends(get_current_admin_user) 
 ):
     """Melakukan soft delete pada kategori (hanya untuk Admin)."""
     if not crud_kategori.soft_delete_kategori(db, kategori_id):

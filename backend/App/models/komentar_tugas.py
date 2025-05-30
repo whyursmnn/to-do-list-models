@@ -5,7 +5,7 @@ from app.core.database import Base
 from datetime import datetime
 
 class KomentarTugas(Base):
-    __tablename__ = "komentar_tugas" # Table name 'KomentarTugas'
+    __tablename__ = "komentar_tugas" 
 
     id = Column(Integer, primary_key=True, index=True)
     tugas_id = Column(Integer, ForeignKey("tugas.id"), nullable=False)

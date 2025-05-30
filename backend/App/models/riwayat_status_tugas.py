@@ -5,7 +5,7 @@ from app.core.database import Base
 from datetime import datetime
 
 class RiwayatStatusTugas(Base):
-    __tablename__ = "riwayat_status_tugas" # Table name 'RiwayatStatusTugas'
+    __tablename__ = "riwayat_status_tugas" 
 
     id = Column(Integer, primary_key=True, index=True)
     tugas_id = Column(Integer, ForeignKey("tugas.id"), nullable=False)

@@ -5,7 +5,7 @@ from app.core.database import Base
 from datetime import datetime
 
 class LogAutentikasi(Base):
-    __tablename__ = "log_autentikasi" # Table name 'LogAutentikasi'
+    __tablename__ = "log_autentikasi" 
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)

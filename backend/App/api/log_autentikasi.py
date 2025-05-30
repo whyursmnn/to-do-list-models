@@ -14,7 +14,7 @@ router = APIRouter()
 @router.get("/users/{user_id}/auth-logs", response_model=List[LogAutentikasiResponse])
 async def read_auth_logs_for_user(
     user_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user) # Hanya admin yang bisa melihat log autentikasi
+    current_user: User = Depends(get_current_admin_user) 
 ):
     """Mendapatkan log autentikasi untuk pengguna tertentu (hanya untuk Admin)."""
     logs = crud_log.get_logs_by_user_id(db, user_id, skip=skip, limit=limit)
