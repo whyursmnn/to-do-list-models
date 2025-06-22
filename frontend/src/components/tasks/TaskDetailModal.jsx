@@ -6,7 +6,6 @@ import { getAttachmentsForTask, uploadAttachment, deleteAttachment } from '../..
 import { getCategories } from '../../services/categoryService'; // <-- TAMBAHKAN IMPOR INI DARI categoryService.js
 import LoadingSpinner from '../common/LoadingSpinner';
 import { useAuth } from '../../contexts/AuthContext';
-
 const TaskDetailModal = ({ task, onClose, onTaskUpdated, showModal }) => {
   const { user, isAdmin } = useAuth();
   
@@ -235,11 +234,31 @@ const TaskDetailModal = ({ task, onClose, onTaskUpdated, showModal }) => {
         kategori_id: editKategoriId ? parseInt(editKategoriId) : null, 
       };
       
+      // Simpan response dari API
       const updatedTaskResponse = await updateTask(currentTask.id, updatedData);
-      setCurrentTask(updatedTaskResponse); 
-      onTaskUpdated(updatedTaskResponse); 
+      
+      // Buat objek task yang benar-benar terupdate dengan menggabungkan data lama dan baru
+      const completeUpdatedTask = {
+        ...currentTask,  // Mempertahankan semua data lama termasuk dibuat_oleh_user
+        ...updatedData,  // Menambahkan data yang diedit
+        // Jika API mengembalikan data dibuat_oleh_user, gunakan itu, jika tidak pertahankan data lama
+        dibuat_oleh_user: updatedTaskResponse?.dibuat_oleh_user || currentTask.dibuat_oleh_user,
+        // Tambahkan fields lain yang mungkin diperbarui dari API
+        ...(updatedTaskResponse || {})
+      };
+      
+      console.log('Data pembuat tugas:', completeUpdatedTask.dibuat_oleh_user); // Untuk debugging
+      
+      // Update state lokal dengan data yang sudah lengkap
+      setCurrentTask(completeUpdatedTask);
+      
+      // Kirim data yang sudah lengkap ke parent component 
+      onTaskUpdated(completeUpdatedTask);
+      
+      // Tampilkan notifikasi berhasil
       alert('Detail tugas berhasil diperbarui!');
-      setActiveTab('detail'); 
+      
+      onClose(); // Tutup modal setelah update sukses
     } catch (err) {
       setError(err.detail ? (Array.isArray(err.detail) ? err.detail.map(d => d.msg).join(', ') : err.detail) : 'Gagal memperbarui detail tugas. Silakan coba lagi.');
       console.error('Update task details error:', err);

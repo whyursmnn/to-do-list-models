@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { getTasks } from '../services/taskService'; // Import untuk statistik tugas
 
 const DashboardPage = () => {
-  const { user, logout, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [stats, setStats] = useState({
     totalTasks: 0,
     completedTasks: 0,
@@ -176,18 +176,7 @@ const DashboardPage = () => {
             </div>
           </div>
 
-          <div className="flex justify-center mt-10">
-            <button 
-              onClick={logout} 
-              className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium rounded-lg shadow-md hover:from-amber-600 hover:to-orange-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-300 focus:ring-opacity-50 active:from-amber-700 active:to-orange-700 transform active:scale-95 transition duration-150 ease-in-out flex items-center gap-2"
-            >
-              <span className="font-semibold">Logout</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H3zm11 4.5a.5.5 0 01-.5.5h-7a.5.5 0 010-1h7a.5.5 0 01.5.5zm0 4a.5.5 0 01-.5.5h-7a.5.5 0 010-1h7a.5.5 0 01.5.5z" clipRule="evenodd" />
-                <path fillRule="evenodd" d="M6.293 9.293a1 1 0 011.414 0L10 11.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </button>
-          </div>
+          
         </main>
       </div>
     </div>
