@@ -7,23 +7,22 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import { updateUser } from '../services/userService';
 
 const ProfilePage = () => {
-  const { user, isLoading: authLoading, isAuthenticated, logout, refreshUser } = useAuth(); // Ambil refreshUser
+  // === SANGAT PENTING: PASTIKAN 'refreshUser' ADA DI SINI ===
+  const { user, isLoading: authLoading, isAuthenticated, logout, refreshUser } = useAuth(); 
+  // === AKHIR PERHATIAN ===
   
   const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(''); // Inisialisasi kosong, diisi di useEffect
+  const [editName, setEditName] = useState(''); 
   const [editPassword, setEditPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [updateError, setUpdateError] = useState(null);
-  const [updateLoading, setUpdateLoading] = useState(false);
-  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [updateError, setUpdateError] = useState(null); 
+  const [updateLoading, setUpdateLoading] = useState(false); 
+  const [updateSuccess, setUpdateSuccess] = useState(false); 
 
-  // Efek untuk mengisi data nama dan mereset status pesan saat user dimuat/berubah
   useEffect(() => {
     if (user) {
       setEditName(user.name || '');
     }
-    // Bersihkan status sukses/error setiap kali komponen dimuat atau user berubah
-    // Ini mencegah pesan sukses dari sesi sebelumnya muncul secara otomatis
     setUpdateSuccess(false); 
     setUpdateError(null);
   }, [user]);
@@ -43,16 +42,16 @@ const ProfilePage = () => {
   const handleEditClick = () => {
     console.log("Edit Profil button clicked. Entering edit mode.");
     setIsEditing(true);
-    setEditPassword(''); // Bersihkan field password saat masuk mode edit
+    setEditPassword(''); 
     setConfirmPassword('');
-    setUpdateError(null); // Bersihkan error/sukses sebelumnya
+    setUpdateError(null); 
     setUpdateSuccess(false);
   };
 
   const handleCancelClick = () => {
     console.log("Cancel button clicked. Exiting edit mode.");
     setIsEditing(false);
-    setEditName(user?.name || ''); // Reset nama ke nilai asli dari user state
+    setEditName(user?.name || ''); 
     setEditPassword('');
     setConfirmPassword('');
     setUpdateError(null);
@@ -60,11 +59,11 @@ const ProfilePage = () => {
   };
 
   const handleUpdateProfile = async (e) => {
-    e.preventDefault(); // SANGAT PENTING: Mencegah reload halaman saat form submit
+    e.preventDefault(); 
     console.log("Submitting profile update.");
     setUpdateLoading(true);
     setUpdateError(null);
-    setUpdateSuccess(false); // Reset pesan sukses sebelum submit form
+    setUpdateSuccess(false); 
 
     if (editPassword && editPassword !== confirmPassword) {
       setUpdateError('Password baru dan konfirmasi password tidak cocok.');
@@ -74,31 +73,30 @@ const ProfilePage = () => {
 
     try {
       const updatePayload = {
-        name: editName,
+        name: editName, 
       };
 
-      if (editPassword) { // Hanya sertakan password jika diisi
+      if (editPassword) { 
         updatePayload.password = editPassword;
       }
       
-      await updateUser(user.id, updatePayload); // Memanggil API untuk update
+      await updateUser(user.id, updatePayload); 
 
-      // Jika password diubah, paksa logout agar user login ulang dengan password baru
       if (editPassword) {
         alert('Password berhasil diubah. Silakan login kembali dengan password baru Anda.');
-        await logout(); // Memanggil logout dari AuthContext akan membersihkan token dan mengarahkan ke login
+        await logout(); 
         return;
       }
 
-      // Jika hanya nama yang diubah (tidak ada password baru)
-      await refreshUser(); // Gunakan refreshUser untuk memuat ulang data user dari backend dan perbarui AuthContext
+      await refreshUser();
+      console.log("User setelah refresh:", user);
 
-      setEditPassword(''); // Bersihkan field password setelah update
-      setConfirmPassword(''); // Bersihkan field konfirmasi setelah update
-      setUpdateSuccess(true); // Tampilkan pesan sukses
-      setIsEditing(false); // Keluar dari mode edit
+      setEditPassword(''); 
+      setConfirmPassword(''); 
+      setUpdateSuccess(true); 
+      setIsEditing(false); 
       
-      alert('Profil berhasil diperbarui!'); // Feedback sukses
+      alert('Profil berhasil diperbarui!'); 
 
     } catch (err) {
       setUpdateError(err.detail ? (Array.isArray(err.detail) ? err.detail.map(d => d.msg).join(', ') : err.detail) : 'Gagal memperbarui profil.');
@@ -147,30 +145,39 @@ const ProfilePage = () => {
               </div>
 
               {/* Tampilan data profil saat tidak dalam mode edit */}
-              {/* === PENTING: BAGIAN INI TIDAK LAGI DALAM <form> === */}
               {!isEditing ? (
-                <> {/* Gunakan Fragment untuk membungkus */}
+                <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="form-control">
-                      <label className="label"><span className="label-text text-base-content">Username:</span></label>
+                      <label className="label">
+                        <span className="label-text text-base-content">Username:</span>
+                      </label>
                       <input type="text" value={user?.username || ''} className="input input-bordered w-full" readOnly />
                     </div>
                     <div className="form-control">
-                      <label className="label"><span className="label-text text-base-content">Nama Lengkap:</span></label>
+                      <label className="label">
+                        <span className="label-text text-base-content">Nama Lengkap:</span>
+                      </label>
                       <input type="text" value={user?.name || ''} className="input input-bordered w-full" readOnly />
                     </div>
                     <div className="form-control">
-                      <label className="label"><span className="label-text text-base-content">Peran:</span></label>
+                      <label className="label">
+                        <span className="label-text text-base-content">Peran:</span>
+                      </label>
                       <input type="text" value={user?.role || ''} className="input input-bordered w-full" readOnly />
                     </div>
                     {user?.email && (
                       <div className="form-control">
-                        <label className="label"><span className="label-text text-base-content">Email:</span></label>
+                        <label className="label">
+                          <span className="label-text text-base-content">Email:</span>
+                        </label>
                         <input type="email" value={user?.email || ''} className="input input-bordered w-full" readOnly />
                       </div>
                     )}
                     <div className="form-control col-span-1 md:col-span-2">
-                      <label className="label"><span className="label-text text-base-content">ID Pengguna:</span></label>
+                      <label className="label">
+                        <span className="label-text text-base-content">ID Pengguna:</span>
+                      </label>
                       <input type="text" value={user?.id || ''} className="input input-bordered w-full" readOnly />
                     </div>
                   </div>
@@ -179,14 +186,13 @@ const ProfilePage = () => {
                     <button type="button" onClick={handleEditClick} className="btn btn-primary">Edit Profil</button>
                   </div>
                 </>
-              ) : null} {/* Jika isEditing true, bagian ini tidak ditampilkan */}
+              ) : null}
 
               {/* Form EDIT Profil (Hanya muncul jika isEditing true) */}
               {isEditing && (
-                <form onSubmit={handleUpdateProfile} className="card-body pt-0"> {/* pt-0 untuk menghilangkan padding atas yang tumpang tindih */}
+                <form onSubmit={handleUpdateProfile} className="card-body pt-0">
                   <h2 className="card-title text-base-content mb-4">Ubah Informasi Akun</h2>
                   
-                  {/* Field-field yang bisa diedit */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="form-control">
                       <label className="label">
@@ -197,10 +203,9 @@ const ProfilePage = () => {
                         value={editName} 
                         onChange={(e) => setEditName(e.target.value)} 
                         className="input input-bordered w-full" 
-                        required={true} // Nama wajib diisi saat mode edit
+                        required={true}
                       />
                     </div>
-                    {/* Password Fields */}
                     <div className="form-control col-span-1 md:col-span-2">
                       <label className="label">
                         <span className="label-text text-base-content">Password Baru:</span>
@@ -227,7 +232,6 @@ const ProfilePage = () => {
                     </div>
                   </div>
 
-                  {/* Tombol Simpan/Batal */}
                   <div className="card-actions justify-end mt-6 col-span-full">
                     <button type="submit" className="btn btn-success" disabled={updateLoading}>
                       {updateLoading ? <span className="loading loading-spinner"></span> : "Simpan Perubahan"}
@@ -235,9 +239,9 @@ const ProfilePage = () => {
                     <button type="button" onClick={handleCancelClick} className="btn btn-ghost">Batal</button>
                   </div>
                 </form>
-              )} {/* Akhir conditional rendering form */}
-            </div> {/* Akhir card-body untuk tampilan */}
-          </div> {/* Akhir card */}
+              )}
+            </div>
+          </div>
         </main>
       </div>
     </div>
