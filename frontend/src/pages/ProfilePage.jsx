@@ -7,9 +7,9 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import { updateUser } from '../services/userService';
 
 const ProfilePage = () => {
-  // === SANGAT PENTING: PASTIKAN 'refreshUser' ADA DI SINI ===
+  
   const { user, isLoading: authLoading, isAuthenticated, logout, refreshUser } = useAuth(); 
-  // === AKHIR PERHATIAN ===
+
   
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(''); 
@@ -144,7 +144,7 @@ const ProfilePage = () => {
                 </div>
               </div>
 
-              {/* Tampilan data profil saat tidak dalam mode edit */}
+              
               {!isEditing ? (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -181,14 +181,14 @@ const ProfilePage = () => {
                       <input type="text" value={user?.id || ''} className="input input-bordered w-full" readOnly />
                     </div>
                   </div>
-                  {/* Tombol "Edit Profil" (Hanya muncul jika TIDAK dalam mode edit) */}
+                  
                   <div className="card-actions justify-end mt-6">
                     <button type="button" onClick={handleEditClick} className="btn btn-primary">Edit Profil</button>
                   </div>
                 </>
               ) : null}
 
-              {/* Form EDIT Profil (Hanya muncul jika isEditing true) */}
+              
               {isEditing && (
                 <form onSubmit={handleUpdateProfile} className="card-body pt-0">
                   <h2 className="card-title text-base-content mb-4">Ubah Informasi Akun</h2>

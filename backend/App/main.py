@@ -17,8 +17,8 @@ sys.path.insert(0, current_dir)
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.api import api_router 
-from app.core.database import Base, engine
+from api import api_router 
+from core.database import Base, engine
 
 
 
