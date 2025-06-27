@@ -390,69 +390,67 @@ const TasksPage = () => {
                       </div>
                       
                       {/* Action Buttons - FIXED DROPDOWN SECTION - responsive */}
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 md:gap-3 mt-4 md:mt-6">
-                        {/* Fixed dropdown menu that opens downward instead of upward */}
-                        <div className="dropdown dropdown-top relative">
-                          <button className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg flex items-center transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-white dark:focus:ring-offset-gray-800">
-                            <svg className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <div className="flex flex-wrap gap-2 mt-4 md:mt-6">
+                        {/* Fixed dropdown menu for status */}
+                        <div className="dropdown dropdown-top">
+                          <button className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg flex items-center transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-white dark:focus:ring-offset-gray-800">
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7"></path>
                             </svg>
-                            Status
+                            <span>Status</span>
                           </button>
-                          <ul className="dropdown-content z-[1] menu p-1 md:p-2 shadow-lg bg-white dark:bg-gray-800 rounded-lg w-40 md:w-52 border border-gray-200 dark:border-gray-700 mt-1 absolute left-0">
-                            <li className="mb-0.5 md:mb-1">
-                              <button onClick={() => handleUpdateStatus(task.id, 'to_do')} className="flex items-center px-3 md:px-4 py-1.5 md:py-2.5 text-xs md:text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
-                                <span className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-purple-500 mr-2 md:mr-2.5"></span>
+                          <ul className="dropdown-content z-[1] menu p-2 shadow-lg bg-white dark:bg-gray-800 rounded-lg w-52 border border-gray-200 dark:border-gray-700 mb-1">
+                            <li className="mb-1">
+                              <button onClick={() => handleUpdateStatus(task.id, 'to_do')} className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                                <span className="w-2.5 h-2.5 rounded-full bg-purple-500 mr-2.5"></span>
                                 To Do
                               </button>
                             </li>
                             <li className="mb-0.5 md:mb-1">
-                              <button onClick={() => handleUpdateStatus(task.id, 'in_progress')} className="flex items-center px-3 md:px-4 py-1.5 md:py-2.5 text-xs md:text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
-                                <span className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-blue-500 mr-2 md:mr-2.5"></span>
+                              <button onClick={() => handleUpdateStatus(task.id, 'in_progress')} className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                                <span className="w-2.5 h-2.5 rounded-full bg-blue-500 mr-2.5"></span>
                                 In Progress
                               </button>
                             </li>
-                            <li className="mb-0.5 md:mb-1">
-                              <button onClick={() => handleUpdateStatus(task.id, 'done')} className="flex items-center px-3 md:px-4 py-1.5 md:py-2.5 text-xs md:text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
-                                <span className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-green-500 mr-2 md:mr-2.5"></span>
+                            <li className="mb-1">
+                              <button onClick={() => handleUpdateStatus(task.id, 'done')} className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                                <span className="w-2.5 h-2.5 rounded-full bg-green-500 mr-2.5"></span>
                                 Done
                               </button>
                             </li>
                             <li>
-                              <button onClick={() => handleUpdateStatus(task.id, 'archived')} className="flex items-center px-3 md:px-4 py-1.5 md:py-2.5 text-xs md:text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
-                                <span className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-gray-500 mr-2 md:mr-2.5"></span>
+                              <button onClick={() => handleUpdateStatus(task.id, 'archived')} className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                                <span className="w-2.5 h-2.5 rounded-full bg-gray-500 mr-2.5"></span>
                                 Archived
                               </button>
                             </li>
                           </ul>
                         </div>
 
-                        <div className="flex space-x-1 md:space-x-2">
-                          {/* Detail Button */}
+                        {/* Detail Button */}
+                        <button 
+                          onClick={() => openDetailModal(task)} 
+                          className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg flex items-center transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-white dark:focus:ring-offset-gray-800"
+                        >
+                          <svg className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                          </svg>
+                          <span>Detail</span>
+                        </button>
+
+                        {/* Delete Button (Admin Only) */}
+                        {isAdmin && (
                           <button 
-                            onClick={() => openDetailModal(task)} 
+                            onClick={() => handleDeleteTask(task.id)} 
                             className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg flex items-center transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-white dark:focus:ring-offset-gray-800"
                           >
                             <svg className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                             </svg>
-                            Detail
+                            <span>Hapus</span>
                           </button>
-
-                          {/* Delete Button (Admin Only) */}
-                          {isAdmin && (
-                            <button 
-                              onClick={() => handleDeleteTask(task.id)} 
-                              className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg flex items-center transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-white dark:focus:ring-offset-gray-800"
-                            >
-                              <svg className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                              </svg>
-                              Hapus
-                            </button>
-                          )}
-                        </div>
+                        )}
                       </div>
                     </div>
                   </div>
