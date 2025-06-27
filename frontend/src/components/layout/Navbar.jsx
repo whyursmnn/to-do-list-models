@@ -3,12 +3,22 @@ import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar = ({ openSidebar }) => {
   const { user, logout } = useAuth();
 
   return (
     <div className="navbar bg-white dark:bg-gray-800 shadow-md px-4 py-2 flex items-center justify-between">
-      <div className="flex-1">
+      <div className="flex-1 flex items-center">
+        {/* Hamburger Menu Button - only visible on mobile/tablet */}
+        <button 
+          onClick={openSidebar}
+          className="lg:hidden mr-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          aria-label="Open menu"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
         <Link to="/" className="text-xl font-semibold text-gray-900 dark:text-white">To-Do Perusahaan</Link>
       </div>
       
