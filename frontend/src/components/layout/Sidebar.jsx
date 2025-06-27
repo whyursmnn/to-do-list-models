@@ -3,109 +3,25 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
-const Sidebar = ({ isSidebarOpen, closeSidebar }) => {
+const Sidebar = () => {
   const { user } = useAuth();
-  
-  // Add close sidebar function for mobile view
-  const handleLinkClick = () => {
-    if (window.innerWidth < 1024) {
-      closeSidebar();
-    }
-  };
 
   return (
-    <aside 
-      className={`${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
-        lg:translate-x-0 fixed lg:static top-0 left-0 z-30 w-64 h-screen 
-        bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 
-        flex flex-col shadow-sm transition-transform duration-300 ease-in-out`}
-    >
-      {/* Close button (visible only on mobile) */}
-      <button 
-        onClick={closeSidebar}
-        className="lg:hidden absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-        aria-label="Close sidebar"
-      >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
-      
-      {/* Navigation Section */}
-      <nav className="flex-grow px-4 py-6">
-        <div className="text-2xl font-bold mb-6 text-center">
-          Menu Utama
-        </div>
-        <ul className="space-y-1">
-          <li>
-            <Link 
-              to="/" 
-              className="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors
-                text-gray-700 dark:text-gray-200 hover:bg-blue-50 hover:text-blue-700
-                dark:hover:bg-blue-900/30 dark:hover:text-blue-400"
-              onClick={handleLinkClick}
-            >
-              <svg className="w-5 h-5 mr-3 text-gray-400 dark:text-gray-500 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-              </svg>
-              Dashboard
-            </Link>
-          </li>
-          <li>
-            <Link 
-              to="/tasks" 
-              className="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors
-                text-gray-700 dark:text-gray-200 hover:bg-blue-50 hover:text-blue-700
-                dark:hover:bg-blue-900/30 dark:hover:text-blue-400"
-              onClick={handleLinkClick}
-            >
-              <svg className="w-5 h-5 mr-3 text-gray-400 dark:text-gray-500 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-              </svg>
-              Tugas
-            </Link>
-          </li>
-          <li>
-            <Link 
-              to="/categories" 
-              className="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors
-                text-gray-700 dark:text-gray-200 hover:bg-blue-50 hover:text-blue-700
-                dark:hover:bg-blue-900/30 dark:hover:text-blue-400"
-              onClick={handleLinkClick}
-            >
-              <svg className="w-5 h-5 mr-3 text-gray-400 dark:text-gray-500 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-              </svg>
-              Kategori
-            </Link>
-          </li>
-          {user?.role === 'admin' && (
-            <li>
-              <Link 
-                to="/users" 
-                className="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors
-                  text-gray-700 dark:text-gray-200 hover:bg-blue-50 hover:text-blue-700
-                  dark:hover:bg-blue-900/30 dark:hover:text-blue-400"
-                onClick={handleLinkClick}
-              >
-                <svg className="w-5 h-5 mr-3 text-gray-400 dark:text-gray-500 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                </svg>
-                Pengguna
-              </Link>
-            </li>
-          )}
-        </ul>
-      </nav>
-      
-      {/* Footer Section */}
-      <div className="p-3 md:p-4 border-t border-gray-100 dark:border-gray-800">
-        <div className="text-xs text-center text-gray-500 dark:text-gray-400">
-          Aplikasi To-Do Perusahaan
-          <div className="mt-1 font-medium">© 2025</div>
-        </div>
+    <div className="w-64 min-h-screen bg-base-300 text-base-content flex flex-col p-4 shadow-lg">
+      <div className="text-2xl font-bold mb-6 text-center">Menu</div>
+      <ul className="menu p-4">
+        <li><Link to="/">Dashboard</Link></li>
+        <li><Link to="/tasks">Tugas</Link></li>
+        <li><Link to="/categories">Kategori</Link></li>
+        {user?.role === 'admin' && (
+          <li><Link to="/users">Pengguna</Link></li>
+        )}
+        {/* Tambahkan item menu lain di sini */}
+      </ul>
+      <div className="mt-auto p-4 text-sm text-center">
+        Aplikasi To-Do Perusahaan © 2025
       </div>
-    </aside>
+    </div>
   );
 };
 
