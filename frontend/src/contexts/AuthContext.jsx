@@ -1,66 +1,109 @@
 // frontend/src/contexts/AuthContext.jsx
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { loginUser, logoutUser, getUserInfoFromLocalStorage } from '../services/authService';
+import { loginUser, logoutUser, getUserInfoFromLocalStorage, getMe } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
+
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Cek token dan info user saat aplikasi dimuat
-    const storedUser = getUserInfoFromLocalStorage();
-    
-    // --- PEMBARUAN: Tambahkan validasi lebih kuat untuk storedUser ---
-    // Memastikan objek user ada dan memiliki properti kunci (misalnya id dan role)
-    if (storedUser && storedUser.id && storedUser.role) { 
-      setUser(storedUser);
-      console.log("AuthContext: User data loaded from localStorage:", storedUser); // Untuk debugging
-    } else {
-      // Jika data user di localStorage tidak lengkap atau tidak valid,
-      // bersihkan localStorage agar tidak ada data "setengah"
-      console.log("AuthContext: No valid user data found in localStorage or data is incomplete.");
-      localStorage.removeItem('token'); // Pastikan token juga dihapus
-      localStorage.removeItem('user'); // Pastikan user juga dihapus
-    }
-    // --- AKHIR PEMBARUAN ---
 
-    setIsLoading(false);
-  }, []);
+  const refreshUser = async () => {
+    try {
+      const response = await getMe(); 
+      
+      if (response && response.id && response.role) { 
+        localStorage.setItem('user', JSON.stringify(response)); 
+        setUser(response); 
+        console.log("AuthContext: User data refreshed and validated from backend:", response);
+        return response;
+      } else {
+        
+        console.warn('AuthContext: Stored token is invalid or expired after refresh. Clearing session.');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setUser(null); 
+        return null; 
+      }
+    } catch (err) {
+     
+      console.error('AuthContext: Error during user refresh/validation:', err);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      setUser(null);
+      throw err; 
+    }
+  };
+
+  const handleInitialLoad = async () => {
+    const storedToken = localStorage.getItem('token');
+    const storedUser = getUserInfoFromLocalStorage();
+
+    if (storedToken && storedUser && storedUser.id && storedUser.role) {
+      setUser(storedUser);
+      console.log('AuthContext: Stored user data found. Attempting to refresh/validate session with backend.');
+
+      try {
+        
+        await refreshUser(); 
+      } catch (error) {
+        // refreshUser akan menangani pembersihan storage dan setUser(null)
+        console.error('AuthContext: Initial refresh/validation failed. User likely needs to re-login.', error);
+      }
+    } else {
+      console.log('AuthContext: No valid token or complete user data found. Ensuring storage is clean.');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      setUser(null);
+    }
+    setIsLoading(false); 
+  };
+
+  useEffect(() => {
+    handleInitialLoad();
+  }, []); 
 
   const login = async (username, password) => {
     setIsLoading(true);
     try {
       const userData = await loginUser(username, password);
       setUser(userData);
-      console.log("AuthContext: User logged in successfully. Setting user state:", userData); // Untuk debugging
+      console.log("AuthContext: User logged in successfully. Setting user state:", userData);
       return true;
     } catch (error) {
-      // Lebih spesifik log error dari AuthContext
-      console.error("AuthContext: Login failed during processing:", error); 
+      console.error("AuthContext: Login failed during processing:", error);
       setUser(null);
-      throw error; // Lempar error untuk ditangani di komponen UI (misal LoginPage)
+      throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
   const logout = async () => {
-    console.log("AuthContext: Attempting logout for user:", user?.username); // Untuk debugging
-    await logoutUser(); // Panggil logout dari service (akan menghapus local storage)
+    console.log("AuthContext: Attempting logout for user:", user?.username);
+    await logoutUser();
     setUser(null);
     console.log("AuthContext: User state cleared, redirecting to login.");
-    navigate('/login'); // Arahkan ke halaman login setelah logout
+    navigate('/login');
   };
 
-  const isAdmin = user && user.role === 'admin';
-  const isAuthenticated = !!user; // Pengguna dianggap terautentikasi jika objek user ada
+  const isAdmin = user?.role === 'admin';
+  const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, isAdmin, login, logout, isLoading }}>
+    <AuthContext.Provider value={{
+      user,
+      isAuthenticated,
+      isAdmin,
+      login,
+      logout,
+      isLoading,
+      refreshUser 
+    }}>
       {children}
     </AuthContext.Provider>
   );

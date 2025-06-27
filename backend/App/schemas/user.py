@@ -1,7 +1,7 @@
-
 # backend/app/schemas/user.py
+
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List # List mungkin tidak terpakai jika email dihapus, tapi biarkan saja
 from datetime import datetime
 
 class UserBase(BaseModel):
@@ -12,8 +12,15 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
 
-class UserUpdate(UserBase):
+# =====================================================================
+# DIPERBAIKI: UserUpdate TIDAK lagi mewarisi dari UserBase.
+# Semua field yang MUNGKIN di-update harus bersifat Optional di sini.
+# =====================================================================
+class UserUpdate(BaseModel): # <--- PENTING: Mewarisi dari BaseModel, BUKAN UserBase
+    username: Optional[str] = None # Sekarang opsional untuk update
     password: Optional[str] = None
+    name: Optional[str] = None     # Sekarang opsional untuk update
+    role: Optional[str] = None     # Sekarang opsional untuk update
     is_deleted: Optional[bool] = None
 
 class UserResponse(UserBase):
@@ -23,4 +30,6 @@ class UserResponse(UserBase):
     is_deleted: bool
 
     class Config:
-        orm_mode = True
+        # Pastikan ini 'from_attributes = True' untuk Pydantic v2
+        # Jika masih 'orm_mode = True', itu hanya warning tapi baiknya disesuaikan
+        from_attributes = True
